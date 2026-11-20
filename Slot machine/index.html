@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Spin - Slot Machine</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    
+    <div class="bg-glow" aria-hidden="true"></div>
+
+  
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <main class="game-container">
+
+        <header class="game-header">
+            <p class="subtitle">// INSERT COIN //</p>
+            <h1 class="marquee-text">GALAXY SPIN</h1>
+            <p class="tagline">Spin the universe. Win the galaxy!</p>
+        </header>
+
+        <section class="game-card">
+
+        
+            <div class="top-info">
+                <div class="info-box">
+                    <span>CREDITS</span>
+                    <strong id="balance">1000</strong>
+                </div>
+
+                <div class="info-box">
+                    <span>BET</span>
+                    <strong id="betDisplay">50</strong>
+                </div>
+
+                <div class="info-box">
+                    <span>SPINS</span>
+                    <strong id="spinCount">0</strong>
+                </div>
+            </div>
+
+          
+            <div class="slot-machine" role="img" aria-label="Slot machine reels">
+                <div class="reel-window">
+                    <div class="reel" id="reel1"><span>🚀</span></div>
+                </div>
+                <div class="reel-window">
+                    <div class="reel" id="reel2"><span>🌎</span></div>
+                </div>
+                <div class="reel-window">
+                    <div class="reel" id="reel3"><span>⭐</span></div>
+                </div>
+            </div>
+
+          
+            <div class="result-message" id="message" role="status" aria-live="polite">
+                Press SPIN to begin your journey!
+            </div>
+
+          
+            <div class="bet-section">
+                <label for="bet">BET AMOUNT</label>
+
+                <div class="bet-controls">
+                    <button id="decreaseBet" type="button" aria-label="Decrease bet">−</button>
+
+                    <input
+                        type="number"
+                        id="bet"
+                        value="50"
+                        min="10"
+                        step="10"
+                        inputmode="numeric"
+                    >
+
+                    <button id="increaseBet" type="button" aria-label="Increase bet">+</button>
+                </div>
+            </div>
+
+           
+            <button class="spin-button" id="spinButton" type="button">
+                SPIN
+            </button>
+
+            <div class="secondary-actions">
+                <button class="ghost-button" id="soundButton" type="button" aria-pressed="true">
+                    🔊 SOUND ON
+                </button>
+
+                <button class="ghost-button" id="resetButton" type="button">
+                    RESET
+                </button>
+            </div>
+
+          
+            <div class="paytable">
+                <h2>PAYTABLE</h2>
+                <p class="paytable-hint">3 matching = full jackpot &nbsp;•&nbsp; 2 matching = half jackpot</p>
+
+                <div class="paytable-row">
+                    <span>3 🚀</span>
+                    <strong>10x BET</strong>
+                </div>
+
+                <div class="paytable-row">
+                    <span>3 🌎</span>
+                    <strong>8x BET</strong>
+                </div>
+
+                <div class="paytable-row">
+                    <span>3 🌙</span>
+                    <strong>6x BET</strong>
+                </div>
+
+                <div class="paytable-row">
+                    <span>3 ⭐</span>
+                    <strong>5x BET</strong>
+                </div>
+
+                <div class="paytable-row">
+                    <span>3 🪐</span>
+                    <strong>4x BET</strong>
+                </div>
+
+                <div class="paytable-row">
+                    <span>3 👽</span>
+                    <strong>3x BET</strong>
+                </div>
+
+                <div class="paytable-row small-win">
+                    <span>2 MATCHING</span>
+                    <strong>half of that symbol's payout</strong>
+                </div>
+            </div>
+
+        </section>
+
+        <footer>
+            <p>JavaScript Slot Machine Mini Project #2</p>
+            <p>Built with HTML5, CSS3, and Vanilla JavaScript</p>
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,631 @@
+
+:root {
+    --color-bg: #0d0221;
+    --color-panel: rgba(13, 2, 33, 0.82);
+    --color-panel-border: rgba(0, 255, 242, 0.4);
+
+    --color-neon-cyan: #00fff2;
+    --color-neon-magenta: #ff2bd6;
+    --color-neon-orange: #ff8a4c;
+    --color-neon-yellow: #ffe66d;
+
+    --color-text: #f4f2ff;
+    --color-text-muted: #9d8fd6;
+    --color-text-soft: #d9d3ff;
+
+    --space-xs: 6px;
+    --space-sm: 10px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+
+    --font-display: "Press Start 2P", "Courier New", monospace;
+    --font-body: "VT323", "Courier New", monospace;
+}
+
+/* -----------------------------------------------------
+   2. RESET & BASE STYLES
+----------------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    font-family: var(--font-body);
+    font-size: 18px;
+    color: var(--color-text);
+    background: var(--color-bg);
+    overflow-x: hidden;
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--color-neon-cyan);
+    outline-offset: 2px;
+}
+
+/* -----------------------------------------------------
+   3. BACKGROUND GLOW + CRT SCANLINE OVERLAY
+   Simple, pure-CSS background — a radial "sunset" gradient
+   plus a starfield made from repeating dots. No JavaScript
+   or <canvas> needed for this at all.
+----------------------------------------------------- */
+.bg-glow {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+
+    background:
+        radial-gradient(circle at 50% 65%, rgba(255, 138, 76, 0.35), transparent 45%),
+        radial-gradient(circle at 50% 65%, rgba(255, 43, 214, 0.25), transparent 60%),
+        radial-gradient(1.5px 1.5px at 20% 20%, rgba(255,255,255,0.6) 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 70% 15%, rgba(255,255,255,0.5) 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 85% 35%, rgba(255,255,255,0.4) 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 35% 10%, rgba(255,255,255,0.5) 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 10% 45%, rgba(255,255,255,0.4) 50%, transparent 51%),
+        var(--color-bg);
+}
+
+/* A repeating, semi-transparent line pattern that drifts
+   slowly downward, imitating an old CRT monitor's scanlines.
+   Costs almost nothing to render since it's pure CSS. */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        rgba(0, 0, 0, 0) 3px
+    );
+
+    animation: scanlineDrift 9s linear infinite;
+    opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scanlines {
+        animation: none;
+    }
+}
+
+/* -----------------------------------------------------
+   4. LAYOUT CONTAINERS
+----------------------------------------------------- */
+.game-container {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 640px;
+
+    margin: auto;
+    padding: var(--space-xl) var(--space-md);
+}
+
+/* -----------------------------------------------------
+   5. HEADER / MARQUEE
+----------------------------------------------------- */
+.game-header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.subtitle {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--color-neon-cyan);
+
+    animation: subtitleBlink 1.6s steps(1) infinite;
+}
+
+.marquee-text {
+    margin: var(--space-md) 0;
+
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 8vw, 3rem);
+    line-height: 1.4;
+    letter-spacing: 2px;
+
+    color: #fff;
+    text-shadow:
+        0 0 6px var(--color-neon-magenta),
+        0 0 16px var(--color-neon-magenta),
+        0 0 32px var(--color-neon-cyan);
+
+    animation: neonFlicker 4s linear infinite;
+}
+
+.tagline {
+    color: var(--color-text-soft);
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+/* -----------------------------------------------------
+   6. GAME CARD (arcade cabinet panel)
+----------------------------------------------------- */
+.game-card {
+    position: relative;
+    padding: var(--space-lg);
+
+    background: var(--color-panel);
+    backdrop-filter: blur(6px);
+
+    border: 2px solid var(--color-panel-border);
+    border-radius: var(--radius-lg);
+
+    box-shadow:
+        0 0 25px rgba(0, 255, 242, 0.25),
+        0 0 60px rgba(255, 43, 214, 0.15),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Little "cabinet bolt" details in each corner — a small
+   skeuomorphic touch that reinforces the arcade-machine feel. */
+.game-card::before,
+.game-card::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-neon-cyan);
+    box-shadow: 0 0 6px var(--color-neon-cyan);
+    top: 14px;
+}
+.game-card::before { left: 14px; }
+.game-card::after { right: 14px; }
+
+.top-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+
+    margin-bottom: var(--space-lg);
+    margin-top: var(--space-sm);
+}
+
+.info-box {
+    padding: var(--space-md) var(--space-xs);
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 255, 242, 0.25);
+    border-radius: var(--radius-sm);
+
+    transition: border-color var(--transition-normal);
+}
+
+.info-box span {
+    display: block;
+    margin-bottom: 6px;
+
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--color-text-muted);
+}
+
+.info-box strong {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--color-neon-yellow);
+    text-shadow: 0 0 8px rgba(255, 230, 109, 0.6);
+}
+
+.info-box strong.value-updated {
+    animation: valuePulse 0.4s ease;
+}
+
+/* -----------------------------------------------------
+   7. REELS (flip-style, arcade "window" look)
+----------------------------------------------------- */
+.slot-machine {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    padding: var(--space-md);
+
+    background: #05000f;
+    border: 3px solid var(--color-neon-magenta);
+    border-radius: 18px;
+
+    box-shadow:
+        0 0 20px rgba(255, 43, 214, 0.5),
+        inset 0 0 25px rgba(0, 0, 0, 0.85);
+}
+
+/* Each reel window provides the 3D perspective that the
+   inner .reel flips within — separating "the frame that
+   stays still" from "the piece that flips" keeps the
+   animation crisp. */
+.reel-window {
+    height: 120px;
+    perspective: 400px;
+
+    background: linear-gradient(145deg, #261044, #100522);
+    border: 2px solid var(--color-neon-cyan);
+    border-radius: var(--radius-md);
+
+    box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.85),
+        0 0 10px rgba(0, 255, 242, 0.3);
+
+    overflow: hidden;
+}
+
+.reel {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform-style: preserve-3d;
+    transition: transform 0.2s;
+}
+
+.reel span {
+    font-size: clamp(2.6rem, 9vw, 4.2rem);
+    filter: drop-shadow(0 0 8px rgba(0, 255, 242, 0.5));
+}
+
+/* While "spinning," rapidly rock the reel back and forth in
+   3D — reads as a fast blur of motion inside its window. */
+.reel.spinning {
+    animation: reelSpinBlur 0.12s linear infinite;
+}
+
+/* The moment a reel lands on its final symbol, give it one
+   quick flip-forward so it feels like it "clicked" into place. */
+.reel.landed {
+    animation: reelLandFlip 0.3s ease;
+}
+
+/* -----------------------------------------------------
+   8. RESULT MESSAGE
+----------------------------------------------------- */
+.result-message {
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: var(--space-md) 0;
+    padding: 12px;
+    text-align: center;
+
+    color: var(--color-text-soft);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-sm);
+
+    font-size: 17px;
+
+    transition: background var(--transition-normal), border-color var(--transition-normal);
+}
+
+.result-message.win-effect {
+    background: rgba(255, 230, 109, 0.1);
+    border-color: rgba(255, 230, 109, 0.4);
+    animation: winAnimation 0.6s ease-in-out infinite alternate;
+}
+
+.result-message.lose-effect {
+    background: rgba(255, 43, 214, 0.06);
+    border-color: rgba(255, 43, 214, 0.25);
+}
+
+/* -----------------------------------------------------
+   9. BET CONTROLS
+----------------------------------------------------- */
+.bet-section {
+    text-align: center;
+    margin-bottom: var(--space-md);
+}
+
+.bet-section label {
+    display: block;
+    margin-bottom: var(--space-sm);
+
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+}
+
+.bet-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.bet-controls button {
+    width: 44px;
+    height: 44px;
+
+    border: 1px solid var(--color-neon-cyan);
+    border-radius: var(--radius-sm);
+
+    color: var(--color-neon-cyan);
+    background: rgba(0, 255, 242, 0.06);
+
+    font-size: 22px;
+    cursor: pointer;
+
+    transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.bet-controls button:hover:not(:disabled) {
+    background: rgba(0, 255, 242, 0.18);
+    transform: scale(1.05);
+}
+
+.bet-controls button:disabled,
+#bet:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+#bet {
+    width: 100px;
+    height: 44px;
+    text-align: center;
+
+    color: var(--color-text);
+    background: #160a2d;
+
+    border: 1px solid var(--color-neon-magenta);
+    border-radius: var(--radius-sm);
+
+    font-family: var(--font-body);
+    font-size: 20px;
+}
+
+#bet::-webkit-outer-spin-button,
+#bet::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#bet {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* -----------------------------------------------------
+   10. BUTTONS
+----------------------------------------------------- */
+.spin-button {
+    width: 100%;
+    padding: 16px;
+
+    border: none;
+    border-radius: var(--radius-md);
+
+    font-family: var(--font-display);
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: #1a0836;
+
+    background: linear-gradient(90deg, var(--color-neon-cyan), var(--color-neon-magenta));
+    cursor: pointer;
+
+    box-shadow: 0 0 20px rgba(255, 43, 214, 0.5);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.spin-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 32px rgba(0, 255, 242, 0.7);
+}
+
+.spin-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.spin-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.secondary-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+    margin-top: 12px;
+}
+
+.ghost-button {
+    width: 100%;
+    padding: 11px;
+
+    font-family: var(--font-body);
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--color-text-soft);
+
+    background: transparent;
+    border: 1px solid rgba(0, 255, 242, 0.35);
+    border-radius: var(--radius-sm);
+
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.ghost-button:hover {
+    background: rgba(0, 255, 242, 0.08);
+    border-color: var(--color-neon-cyan);
+}
+
+/* -----------------------------------------------------
+   11. PAYTABLE
+----------------------------------------------------- */
+.paytable {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(0, 255, 242, 0.25);
+    border-radius: var(--radius-md);
+}
+
+.paytable h2 {
+    margin-bottom: var(--space-sm);
+    text-align: center;
+
+    font-family: var(--font-display);
+    color: var(--color-neon-cyan);
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.paytable-hint {
+    margin-bottom: var(--space-sm);
+    text-align: center;
+
+    font-size: 14px;
+    color: rgba(157, 143, 214, 0.9);
+}
+
+.paytable-row {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 7px 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    font-size: 16px;
+}
+
+.paytable-row:last-child {
+    border-bottom: none;
+}
+
+.paytable-row strong {
+    color: var(--color-neon-yellow);
+}
+
+.small-win {
+    color: var(--color-neon-cyan);
+}
+
+/* -----------------------------------------------------
+   12. FOOTER
+----------------------------------------------------- */
+footer {
+    margin-top: var(--space-lg);
+    text-align: center;
+
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* -----------------------------------------------------
+   13. ANIMATIONS
+----------------------------------------------------- */
+@keyframes scanlineDrift {
+    from { background-position: 0 0; }
+    to   { background-position: 0 60px; }
+}
+
+@keyframes subtitleBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+@keyframes neonFlicker {
+    0%, 19%, 21%, 23%, 54%, 56%, 100% { opacity: 1; }
+    20%, 22%, 55% { opacity: 0.6; }
+}
+
+@keyframes reelSpinBlur {
+    0%   { transform: rotateX(0deg); filter: blur(0px); }
+    50%  { transform: rotateX(20deg); filter: blur(1.5px); }
+    100% { transform: rotateX(0deg); filter: blur(0px); }
+}
+
+@keyframes reelLandFlip {
+    0%   { transform: rotateX(-90deg); }
+    100% { transform: rotateX(0deg); }
+}
+
+@keyframes winAnimation {
+    from { transform: scale(1); }
+    to   { transform: scale(1.03); }
+}
+
+@keyframes valuePulse {
+    0%   { transform: scale(1.3); color: var(--color-neon-cyan); }
+    100% { transform: scale(1); }
+}
+
+/* -----------------------------------------------------
+   14. RESPONSIVE DESIGN
+----------------------------------------------------- */
+@media (max-width: 500px) {
+    .game-container {
+        padding: var(--space-lg) var(--space-sm);
+    }
+
+    .game-card {
+        padding: var(--space-md);
+    }
+
+    .reel-window {
+        height: 92px;
+    }
+
+    .slot-machine {
+        gap: 7px;
+        padding: var(--space-sm);
+    }
+
+    .info-box strong {
+        font-size: 13px;
+    }
+
+    .paytable-row {
+        font-size: 14px;
+    }
+
+    .secondary-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 360px) {
+    .top-info {
+        gap: 6px;
+    }
+
+    .info-box {
+        padding: 10px 4px;
+    }
+
+    .info-box strong {
+        font-size: 11px;
+    }
+}
